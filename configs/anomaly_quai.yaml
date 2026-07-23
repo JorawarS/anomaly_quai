@@ -1,0 +1,82 @@
+# Config generated from anomaly_quai.ipynb
+# Source notebook is unchanged.
+
+#Set the root directory for the project
+root: &root_anchor /home/admin_rech/repos/anomalib/
+
+# dataset configuration: prebuilt(in anomalib) or custom(using Folder dataclass in anomalib
+data:
+  prebuilt:
+    category: bottle
+    seed: 42
+  custom:
+    normal_dir: good
+    abnormal_dir: defect
+    mask_dir: masks/defect
+    train_batch_size: 8
+    eval_batch_size: 8
+    seed: 42
+
+# wandb configuration for logging and tracking experiments (add key in .env file)
+wandb:
+  project: anomaly_quai
+  name: Stfpm_enhanced_pixel_AUROC
+  entity: jorawar-singh-dham-universit-de-montr-al
+  save_dir: /home/admin_rech/repos/anomalib/logs
+  notes: Enhanced Quai_Drone dataset using Stfpm model and pixel-level AUROC as callback.
+  group: quai_drone
+  log_model: false 
+  job_type: training
+
+#Call backs stop training when the monitored metric stops improving and saves the best model based on the monitored metric.
+callbacks:
+  enabled: true
+  ModelCheckpoint:
+    mode: max
+    monitor: val_pixel_AUROC
+    dirpath: /home/admin_rech/repos/anomalib/checkpoints
+    save_top_k: 1
+  EarlyStopping:
+    monitor: val_pixel_AUROC
+    mode: max
+    patience: 5 
+
+#Specify the metrics to be used for evaluation during validation and testing. Each metric is defined with its name, the fields it operates on, and a prefix for logging purposes.
+metrics:
+  val:
+    - name: AUROC
+      fields: [pred_score, gt_label]
+      prefix: val_image_
+    - name: AUROC
+      fields: [anomaly_map, gt_mask]
+      prefix: val_pixel_
+  test:
+    - name: AUROC
+      fields: [pred_score, gt_label]
+      prefix: test_image_
+    - name: F1Score
+      fields: [pred_label, gt_label]
+      prefix: test_image_
+    - name: AUPR
+      fields: [pred_score, gt_label]
+      prefix: test_image_
+    - name: AUROC
+      fields: [anomaly_map, gt_mask]
+      prefix: test_pixel_
+    - name: F1Score
+      fields: [pred_mask, gt_mask]
+      prefix: test_pixel_
+    - name: AUPRO
+      fields: [anomaly_map, gt_mask]
+      prefix: test_pixel_
+    - name: AUPIMO
+      fields: [anomaly_map, gt_mask]
+      prefix: test_pixel_
+
+#Specify the model (see available models in anomalib documentation)
+model:
+  name: AnomalyDINO
+
+engine:
+  accelerator: auto
+  log_every_n_steps: 2
