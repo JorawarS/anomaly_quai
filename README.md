@@ -139,3 +139,5 @@ repo/
 ├── checkpoints/
 └── logs/
 ```
+## Examples
+See the examples folder for notebooks explaining anomalib.
