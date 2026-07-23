@@ -7,7 +7,7 @@ This repository contains a Python training script and a YAML configuration file 
 | File | Purpose |
 | --- | --- |
 | `anomaly_quai.py` | Main entry point for loading the config, preparing the dataset, creating the model, and running training or evaluation. |
-| `anomaly_quai.yaml` | Configuration file for paths, logging, callbacks, metrics, model choice, and engine settings. |
+| `configs/anomaly_quai.yaml` | Configuration file for paths, logging, callbacks, metrics, model choice, and engine settings. |
 
 ## Requirements
 
