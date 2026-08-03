@@ -13,6 +13,7 @@ from anomalib.loggers import AnomalibWandbLogger
 from omegaconf import OmegaConf 
 from argparse import ArgumentParser
 from datetime import datetime
+import inspect
 
 load_dotenv() # Load environment variables from .env file
 PREBUILT_DATA_MODULES = [   
@@ -122,7 +123,13 @@ if __name__ == "__main__":
 
     #setup model
     if args.mode == "train":
-        model = getattr(anomalib.models, config.model.name)(evaluator=evaluator)
+        model_csl = getattr(anomalib.models, config.model.name) # Gets the model class to use
+        kwargs = {"evaluator": evaluator} # Instanciate the parameters to be sent to the constructor
+        signature = inspect.signature(model_csl.__init__) # Gets the constructor signature
+        # If both the config and the constructor have the 'encoder_name' param, we add it
+        if hasattr(config.model, "encoder_name") and "encoder_name" in signature.parameters:
+            kwargs["encoder_name"] = config.model.encoder_name
+        model = model_csl(**kwargs) # Instanciation of the model
         print(f"Initialized model: {config.model.name} with evaluator: {evaluator}")
     if args.mode == "test":
         # Extract model name from checkpoint filename

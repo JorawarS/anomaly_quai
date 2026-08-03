@@ -13,17 +13,17 @@ data:
     normal_dir: good
     abnormal_dir: defect
     mask_dir: masks/defect
-    train_batch_size: 8
+    train_batch_size: 8 # 1 for EfficientAd
     eval_batch_size: 8
     seed: 42
 
 # wandb configuration for logging and tracking experiments (add key in .env file)
 wandb:
   project: anomaly_quai
-  name: Stfpm_enhanced_pixel_AUROC
+  name: AnomalyDINO_base_enhanced_pixel_AUROC
   entity: jorawar-singh-dham-universit-de-montr-al
   save_dir: /home/admin_rech/repos/anomalib/logs
-  notes: Enhanced Quai_Drone dataset using Stfpm model and pixel-level AUROC as callback.
+  notes: Enhanced Quai_Drone dataset using AnomalyDINO-base model and pixel-level AUROC as callback.
   group: quai_drone
   log_model: false 
   job_type: training
@@ -69,13 +69,14 @@ metrics:
     - name: AUPRO
       fields: [anomaly_map, gt_mask]
       prefix: test_pixel_
-    - name: AUPIMO
+    - name: AUPIMO # To comment for those models: Csflow, Dfm, Draem, EfficientAd, Padim and Stfpm
       fields: [anomaly_map, gt_mask]
       prefix: test_pixel_
 
 #Specify the model (see available models in anomalib documentation)
 model:
   name: AnomalyDINO
+  encoder_name: vit_base_patch14_dinov2 # Ideally comment if not needed, but won't break (for clarity)
 
 engine:
   accelerator: auto
